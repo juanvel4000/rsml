@@ -1,0 +1,10 @@
+[project]
+name = "rsml"
+version = "0.1.0"
+description = "really simple mailing lists"
+license = "BSD-3-Clause"
+dependencies = ["aiosmtpd"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
