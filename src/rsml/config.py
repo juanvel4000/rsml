@@ -1,15 +1,20 @@
 """configuration loading for rsml"""
 
-from pathlib import Path
-import tomllib
 import dataclasses
+import sqlite3
+import tomllib
 import typing
+from pathlib import Path
+
 
 @dataclasses.dataclass
 class RSMLConfig:
     """holds the rsml runtime configuration"""
 
-    server_secret: str | None = None
+    subscriber_db: Path
+    email_directory: Path
+
+    server_secret: str
     posting_email: str = "dev@localhost"
     display_name: str = "rsml list"
     list_id: str = "localhost"
@@ -17,12 +22,16 @@ class RSMLConfig:
     archive_max: int = 100
     posting: bool = True
     posting_permissions: str = "all"
-    subscriber_db: Path | None = None
-    email_directory: Path | None = None
     precedence: str = "disabled"
     fix_date: bool = False
 
-def validate_config(config: RSMLConfig, validate_hints: bool = True, validate_values: bool = True, validate_paths: bool = False) -> bool:
+
+def validate_config(
+    config: RSMLConfig,
+    validate_hints: bool = True,
+    validate_values: bool = True,
+    validate_paths: bool = False,
+) -> None:
     """verify whether an RSMLConfig class is valid"""
 
     if validate_hints:
@@ -43,21 +52,28 @@ def validate_config(config: RSMLConfig, validate_hints: bool = True, validate_va
             raise ValueError("config.display_name is empty")
         if not config.list_id:
             raise ValueError("config.list_id is empty")
+        if config.archive_limit <= 0:
+            raise ValueError("config.archive_limit must be greater than zero")
+        if config.archive_max <= 0:
+            raise ValueError("config.archive_max must be greater than zero")
+
+        if config.archive_limit > config.archive_max:
+            raise ValueError(
+                "config.archive_limit cannot be greater than config.archive_max"
+            )
 
         # validate vars with specific string expectations
         if config.precedence not in ["list", "disabled"]:
-            raise ValueError(f"config.precedence expected list/disabled, got {str(config.precedence)}")
+            raise ValueError(
+                f"config.precedence expected list/disabled, got {str(config.precedence)}"
+            )
         if config.posting_permissions not in ["all", "subscribers"]:
-            raise ValueError(f"config.posting_permissions expected all/subscribers, got {str(config.posting_permissions)}")
+            raise ValueError(
+                f"config.posting_permissions expected all/subscribers, got {str(config.posting_permissions)}"
+            )
 
     # validate paths
     if validate_paths:
-        # variable check
-        if not config.email_directory:
-            raise ValueError("config.email_directory is empty")
-        if not config.subscriber_db:
-            raise ValueError("config.subscriber_db is empty")
-
         # actual existence in fs
         if config.email_directory.exists():
             if not config.email_directory.is_dir():
@@ -71,4 +87,52 @@ def validate_config(config: RSMLConfig, validate_hints: bool = True, validate_va
         else:
             raise FileNotFoundError(config.subscriber_db)
 
-    return True
+
+def load_config(
+    fil: str | Path = "./rsml.toml",
+    validate: bool = True,
+) -> RSMLConfig:
+    """load rsml configuration from a file"""
+
+    path = Path(fil)
+
+    try:
+        with path.open("rb") as fp:
+            data = tomllib.load(fp).get("rsml", {})
+            if not data:
+                raise ValueError("[rsml] section is missing or empty")
+    except tomllib.TOMLDecodeError as exc:
+        raise ValueError(f"invalid toml in {str(path)}") from exc
+
+    config = RSMLConfig(
+        subscriber_db=Path(data.get("subscriber_db", "/var/lib/rsml/subs.db")),
+        email_directory=Path(data.get("email_directory", "/var/lib/rsml/mail")),
+        server_secret=data.get("server_secret"),
+        posting_email=data.get("posting_email", "dev@localhost"),
+        display_name=data.get("display_name", "rsml list"),
+        list_id=data.get("list_id", "localhost"),
+        archive_limit=data.get("archive_limit", 50),
+        archive_max=data.get("archive_max", 100),
+        posting=data.get("posting", True),
+        posting_permissions=data.get("posting_permissions", "all"),
+        precedence=data.get("precedence", "disabled"),
+        fix_date=data.get("fix_date", False),
+    )
+    if validate:
+        validate_config(config, validate_paths=False)
+    return config
+
+
+def build_structure(
+    config: RSMLConfig, make_dirs: bool = True, make_db: bool = True
+) -> None:
+    validate_config(config)
+
+    if make_dirs:
+        config.email_directory.mkdir(parents=True, exist_ok=True)
+
+    if make_db:
+        config.subscriber_db.parent.mkdir(parents=True, exist_ok=True)
+
+        with sqlite3.connect(config.subscriber_db):
+            pass

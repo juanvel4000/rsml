@@ -1,0 +1,17 @@
+[rsml]
+server_secret = "placeholder"
+posting_email = "list@127.0.0.1"
+
+display_name = "rsml list"
+list_id = "127.0.0.1"
+
+archive_limit = 50
+archive_max = 100
+
+posting = true
+posting_permissions = "subscribers"
+
+subscriber_db = "/var/lib/rsml/subscribers.db"
+email_directory = "/var/lib/rsml/emails"
+precedence = "list"
+fix_date = false
