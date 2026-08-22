@@ -12,6 +12,6 @@ posting = true
 posting_permissions = "subscribers"
 
 subscriber_db = "/var/lib/rsml/subscribers.db"
-email_directory = "/var/lib/rsml/emails"
+email_directory = "/var/lib/rsml/mail"
 precedence = "list"
 fix_date = false
