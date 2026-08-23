@@ -44,7 +44,7 @@ This section outlines all the server-side functionality.
 
 #### Archive
 
-`GET /list/archive?date=X`
+`GET /list/archive?date=X&limit=50&order=desc`
 
 RSML uses `mboxrd`
 
@@ -73,9 +73,7 @@ The server will dynamically add or modify the following headers for mass-forward
 
 RSML accepts messages from an external MTA through LMTP.
 
-The LMTP service is responsible only for message ingestion. SMTP, Internet, mail delivery, queuing, and retry handling are responsabilities for the external MTA.
-
-### Configuration
+The LMTP service is responsible only for message ingestion. SMTP, Internet, mail delivery, queuing, and retry handling are responsibilities for the external MTA.
 
 Configuration is expected to be stored in a `TOML`-formatted file. RSML accepts a configuration path as an argument; if no path is provided, it attempts to load `./rsml.toml`; the specified defaults are used.
 
