@@ -1,6 +1,4 @@
-from email import policy
 from email.message import EmailMessage
-from email.parser import BytesParser
 
 import pytest
 

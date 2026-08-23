@@ -92,11 +92,11 @@ def validate_config(
         # validate vars with specific string expectations
         if config.precedence not in ["list", "disabled"]:
             raise ValueError(
-                f"config.precedence expected list/disabled, got {str(config.precedence)}"
+                f"config.precedence expected list/disabled, got {config.precedence!s}"
             )
         if config.posting_permissions not in ["all", "subscribers"]:
             raise ValueError(
-                f"config.posting_permissions expected all/subscribers, got {str(config.posting_permissions)}"
+                f"config.posting_permissions expected all/subscribers, got {config.posting_permissions!s}"
             )
 
     # validate paths
@@ -129,7 +129,7 @@ def load_config(
             if not data:
                 raise ValueError("[rsml] section is missing or empty")
     except tomllib.TOMLDecodeError as exc:
-        raise ValueError(f"invalid toml in {str(path)}") from exc
+        raise ValueError(f"invalid toml in {path!s}") from exc
 
     config = RSMLConfig(
         subscriber_db=Path(data.get("subscriber_db", "/var/lib/rsml/subscribers.db")),

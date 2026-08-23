@@ -29,7 +29,6 @@ def create_app(config: RSMLConfig) -> Flask:
 @http.route("/list/subscribe", methods=["POST"])
 async def subscribe():
     """process an email and return a verification token"""
-    config = current_app.config["RSML_CONFIG"]
     mailer = current_app.config["RSML_MAILER"]
     data = request.get_json(silent=True)
 

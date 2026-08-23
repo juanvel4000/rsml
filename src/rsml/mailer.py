@@ -1,7 +1,6 @@
 """system mail generator"""
 
 import copy
-import smtplib
 from collections.abc import Iterable
 from email import policy
 from email.message import EmailMessage

@@ -7,8 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `CONTRIBUTING.md` guidelines
+
 ### Fixed
 
+- fixed minor issues across various files in the codebase
 - rename `publish` to `tests` in `tests.yml:jobs`
 
 ## [0.1.4] - 2026-08-23

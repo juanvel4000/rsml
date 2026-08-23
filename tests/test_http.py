@@ -58,7 +58,7 @@ def test_verify_valid(client, config, app):
 
 def test_unsubscribe_valid(client, config, app):
     vtoken = generate_token(config.server_secret, "verify", "test@example.com")
-    vresp = client.get(f"/list/verify?email=test@example.com&token={vtoken}")
+    _ = client.get(f"/list/verify?email=test@example.com&token={vtoken}")
     token = generate_token(config.server_secret, "unsub", "test@example.com")
     resp = client.get(f"/list/unsubscribe?email=test@example.com&token={token}")
     assert resp.status_code == 200
@@ -129,5 +129,5 @@ def test_archive_over_max(client, config):
 
 
 def test_archive_bad_limit(client, config):
-    resp = client.get(f"/list/archive?limit=invalid-limit")
+    resp = client.get("/list/archive?limit=invalid-limit")
     assert resp.status_code == 400
