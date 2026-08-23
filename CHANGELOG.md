@@ -17,3 +17,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - two-step subscription via `/list/subscribe` and `/list/verify`
 - `/list/archive` endpoint for `.mbox` archive retrieval of the mailing list
 - one-click unsubscribe with `List-Unsubscribe` and `List-Unsubscribe-Post` (RFC 8058)
+- project spec (`SPEC.md`)
