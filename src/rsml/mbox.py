@@ -4,8 +4,6 @@ from dataclasses import dataclass
 from datetime import datetime
 from email.message import EmailMessage
 
-from rsml.storage import Storage
-
 
 @dataclass
 class MboxItem:
