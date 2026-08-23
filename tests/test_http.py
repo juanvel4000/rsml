@@ -1,4 +1,3 @@
-from pathlib import Path
 from unittest.mock import AsyncMock
 
 import pytest
@@ -86,3 +85,49 @@ def test_verify_non_matching(client, config):
     token = generate_token(config.server_secret, "verify", "test@example.com")
     resp = client.get(f"/list/verify?email=invalid@example.com&token={token}")
     assert resp.status_code == 403
+
+
+def test_subscribe_invalid_email(client):
+    resp = client.post("/list/subscribe", json={"email": "test@//example.com"})
+    assert resp.status_code == 400
+
+
+def test_subscribe_missing_body(client):
+    resp = client.post("/list/subscribe")
+    assert resp.status_code == 400
+
+
+def test_verify_missing_email(client):
+    resp = client.get("/list/verify?token=no-email")
+    assert resp.status_code == 400
+
+
+def test_unsubscribe_missing_email(client):
+    resp = client.get("/list/unsubscribe?token=no-email")
+    assert resp.status_code == 400
+
+
+def test_archive_all(client):
+    resp = client.get("/list/archive?date=all")
+    assert resp.status_code == 200
+    assert resp.headers["Content-Type"] == "application/mbox"
+
+
+def test_archive_specific_date(client):
+    resp = client.get("/list/archive?date=1970-01-01")
+    assert resp.status_code == 200
+
+
+def test_archive_invalid_date(client):
+    resp = client.get("/list/archive?date=invalid-date-string")
+    assert resp.status_code == 400
+
+
+def test_archive_over_max(client, config):
+    resp = client.get(f"/list/archive?limit={config.archive_max + 1}")
+    assert resp.status_code == 400
+
+
+def test_archive_bad_limit(client, config):
+    resp = client.get(f"/list/archive?limit=invalid-limit")
+    assert resp.status_code == 400
