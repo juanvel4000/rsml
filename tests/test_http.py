@@ -8,7 +8,7 @@ from rsml.tokens import generate_token
 
 
 @pytest.fixture
-def config(tmp_path):
+def config(tmp_path) -> RSMLConfig:
     return RSMLConfig(
         subscriber_db=tmp_path / "subscribers.db",
         email_directory=tmp_path / "mail",
