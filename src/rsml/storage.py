@@ -62,7 +62,9 @@ class Storage:
 
     def add_subscriber(self, email: str) -> bool:
         with sqlite3.connect(self.config.subscriber_db) as db:
-            _ = db.execute("INSERT INTO subscribers (email) VALUES (?)", (email,))
+            _ = db.execute(
+                "INSERT OR IGNORE INTO subscribers (email) VALUES (?)", (email,)
+            )
         return True
 
     def remove_subscriber(self, email: str) -> bool:
