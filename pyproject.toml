@@ -14,3 +14,6 @@ build-backend = "hatchling.build"
 dev = [
     "pytest",
 ]
+
+[project.scripts]
+rsml = "rsml.cli:main"

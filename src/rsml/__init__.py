@@ -1,3 +1,4 @@
+from .cli import main
 from .config import RSMLConfig, load_config, validate_config
 from .lmtp import LMTPHandler, controller_init
 from .mailer import Mailer

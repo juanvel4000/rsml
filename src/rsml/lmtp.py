@@ -37,9 +37,8 @@ class LMTPHandler:
 
 def controller_init(config: RSMLConfig) -> LMTPController:
     storage = Storage(config)
-    # TODO: receive hostname and port from config
     controller = LMTPController(
-        LMTPHandler(config, storage), hostname="127.0.0.1", port=8024
+        LMTPHandler(config, storage), hostname=config.lmtp_host, port=config.lmtp_port
     )
 
     controller.start()

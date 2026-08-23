@@ -1,29 +1,33 @@
 """a dumb flask server for the RSML endpoints"""
 
 import hmac
-import os
 from datetime import UTC, datetime
 from email import policy
 from email.parser import BytesParser
 
 from email_validator import EmailNotValidError, validate_email
-from flask import Flask, make_response, request
+from flask import Blueprint, Flask, current_app, make_response, request
 
-from .config import load_config
+from .config import RSMLConfig
 from .mbox import Mbox, MboxItem
 from .storage import Storage
 from .tokens import generate_token
 
-http = Flask(__name__)
+http = Blueprint("rsml", __name__)
 
-# TODO: proper config loading
-config = load_config(os.environ.get("RSML_CONFIG", "rsml.toml"))
-storage = Storage(config)
+
+def create_app(config: RSMLConfig) -> Flask:
+    app = Flask(__name__)
+    app.config["RSML_CONFIG"] = config
+    app.config["RSML_STORAGE"] = Storage(config)
+    app.register_blueprint(http)
+    return app
 
 
 @http.route("/list/subscribe", methods=["POST"])
 def subscribe():
     """process an email and return a verification token"""
+    config = current_app.config["RSML_CONFIG"]
     data = request.get_json(silent=True)
 
     if not isinstance(data, dict):
@@ -43,6 +47,8 @@ def subscribe():
 @http.route("/list/verify")
 def verify():
     """subscribe the email using the verification token"""
+    config = current_app.config["RSML_CONFIG"]
+    storage = current_app.config["RSML_STORAGE"]
     token = request.args.get("token")
 
     email = request.args.get("email")
@@ -66,6 +72,8 @@ def verify():
 @http.route("/list/unsubscribe")
 def unsubscribe():
     """unsubscribe the user using an unsubscription token"""
+    config = current_app.config["RSML_CONFIG"]
+    storage = current_app.config["RSML_STORAGE"]
     token = request.args.get("token")
 
     email = request.args.get("email")
@@ -89,6 +97,8 @@ def unsubscribe():
 @http.route("/list/archive")
 def archive():
     """retrieve an mbox containing an archive of mails"""
+    config = current_app.config["RSML_CONFIG"]
+    storage = current_app.config["RSML_STORAGE"]
     date = request.args.get("date") or "today"
     limit = request.args.get("limit") or config.archive_limit
     order = request.args.get("order") or "desc"

@@ -27,6 +27,10 @@ def config(tmp_path) -> RSMLConfig:
         relay_host="127.0.0.1",
         relay_port=25,
         http_url="http://127.0.0.1:8080",
+        lmtp_host="127.0.0.1",
+        lmtp_port=8024,
+        http_host="127.0.0.1",
+        http_port=8080,
     )
 
 

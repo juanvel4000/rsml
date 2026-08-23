@@ -29,6 +29,12 @@ class RSMLConfig:
     relay_port: int = 25
     http_url: str = "http://127.0.0.1:8080"
 
+    lmtp_host: str = "127.0.0.1"
+    lmtp_port: int = 8024
+
+    http_host: str = "127.0.0.1"
+    http_port: int = 8080
+
 
 def validate_config(
     config: RSMLConfig,
@@ -131,6 +137,10 @@ def load_config(
         relay_host=data.get("relay_host", "127.0.0.1"),
         relay_port=data.get("relay_port", 25),
         http_url=data.get("http_url", "http://127.0.0.1:8080"),
+        lmtp_host=data.get("lmtp_host", "127.0.0.1"),
+        lmtp_port=data.get("lmtp_port", 8024),
+        http_host=data.get("http_host", "127.0.0.1"),
+        http_port=data.get("http_port", 8080),
     )
     if validate:
         validate_config(config, validate_paths=False)
