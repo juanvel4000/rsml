@@ -3,7 +3,8 @@
 ![PyPI License](https://img.shields.io/pypi/l/rsml)
 ![PyPI Status](https://img.shields.io/pypi/status/rsml)
 ![PyPI Version](https://img.shields.io/pypi/v/rsml)
-![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/juanvel4000/rsml/publish.yml)
+![GitHub Actions Workflow Status (Publish)](https://img.shields.io/github/actions/workflow/status/juanvel4000/rsml/publish.yml?label=publish)
+![GitHub Actions Workflow Status (Tests)](https://img.shields.io/github/actions/workflow/status/juanvel4000/rsml/tests.yml?label=tests)
 
 a small, self-hosted mailing list system.
 
