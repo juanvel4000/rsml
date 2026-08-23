@@ -7,7 +7,40 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.1.0] 2026-08-23
+### Fixed
+
+- rename `publish` to `tests` in `tests.yml:jobs`
+
+## [0.1.4] - 2026-08-23
+
+### Added
+
+- github actions workflow for tests (`tests.yml`)
+
+## [0.1.3] - 2026-08-23
+
+### Added
+
+- badges on README.md
+- `publish.yml` workflow via github actions
+
+## [0.1.2] - 2026-08-23
+
+### Added
+
+- other metadata to `pyproject.toml`
+
+## [0.1.1] - 2026-08-23
+
+### Added
+
+- readme entry in `pyproject.toml`
+
+### Changed
+
+- `__init__.py` as the single source of truth for project versioning
+
+## [0.1.0] - 2026-08-23
 
 ### Added
 
