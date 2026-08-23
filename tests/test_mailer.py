@@ -65,9 +65,7 @@ def test_add_unsubscribe_headers(config):
 
 def test_generate_verification(config):
     mailer = Mailer(config)
-    message = BytesParser(policy=policy.default).parsebytes(
-        mailer.generate_verification("receiver@example.com")
-    )
+    message = mailer.generate_verification("receiver@example.com")
 
     expected_token = generate_token(
         config.server_secret, "verify", "receiver@example.com"

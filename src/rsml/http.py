@@ -93,7 +93,7 @@ def unsubscribe():
         return {"success": False, "error": "token does not match with the email"}, 403
 
     _ = storage.remove_subscriber(email)
-    return {"success": True}, 201
+    return {"success": True}, 200
 
 
 @http.route("/list/archive")
