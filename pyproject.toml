@@ -7,6 +7,31 @@ license = "BSD-3-Clause"
 dependencies = ["aiosmtpd", "aiosmtplib", "flask[async]", "email-validator"]
 requires-python = ">=3.11"
 
+keywords = [ "mailing-list", "email", "self-hosted"]
+
+authors = [
+    { name = "juanvel400" }
+]
+
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Framework :: Flask",
+    "Intended Audience :: System Administrators",
+    "License :: OSI Approved :: BSD License",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Communications :: Email :: Mailing List Servers",
+]
+
+[project.urls]
+Homepage = "https://github.com/juanvel4000/rsml"
+Repository = "https://github.com/juanvel4000/rsml"
+Issues = "https://github.com/juanvel4000/rsml/issues"
+Changelog = "https://github.com/juanvel4000/rsml/blob/main/CHANGELOG.md"
+
 [tool.hatch.version]
 path = "src/rsml/__init__.py"
 
