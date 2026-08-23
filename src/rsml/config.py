@@ -25,6 +25,10 @@ class RSMLConfig:
     precedence: str = "disabled"
     fix_date: bool = False
 
+    relay_host: str = "127.0.0.1"
+    relay_port: int = 25
+    http_url: str = "http://127.0.0.1:8080"
+
 
 def validate_config(
     config: RSMLConfig,
@@ -61,6 +65,13 @@ def validate_config(
             raise ValueError(
                 "config.archive_limit cannot be greater than config.archive_max"
             )
+
+        if not config.http_url:
+            raise ValueError("config.http_url is empty")
+        if not config.relay_host:
+            raise ValueError("config.relay_host is empty")
+        if not config.relay_port:
+            raise ValueError("config.relay_port is empty")
 
         # validate vars with specific string expectations
         if config.precedence not in ["list", "disabled"]:
@@ -117,6 +128,9 @@ def load_config(
         posting_permissions=data.get("posting_permissions", "all"),
         precedence=data.get("precedence", "disabled"),
         fix_date=data.get("fix_date", False),
+        relay_host=data.get("relay_host", "127.0.0.1"),
+        relay_port=data.get("relay_port", 25),
+        http_url=data.get("http_url", "http://127.0.0.1:8080"),
     )
     if validate:
         validate_config(config, validate_paths=False)

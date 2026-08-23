@@ -15,3 +15,7 @@ subscriber_db = "/var/lib/rsml/subscribers.db"
 email_directory = "/var/lib/rsml/mail"
 precedence = "list"
 fix_date = false
+
+relay_host="127.0.0.1"
+relay_port=25
+http_url="http://127.0.0.1:8080"

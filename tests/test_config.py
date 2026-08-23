@@ -25,6 +25,9 @@ def test_validate_config():
         posting_permissions="subscribers",
         precedence="list",
         fix_date=False,
+        relay_host="127.0.0.1",
+        relay_port=25,
+        http_url="http://127.0.0.1:8080",
     )
 
     assert validate_config(config) is None
