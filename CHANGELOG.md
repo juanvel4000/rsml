@@ -9,17 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- unit tests
-- `lmtp.py`
-- `mailer.py`
-- `http.py`
-- `mbox.py`
-- `storage.py`
-- `config.py`
-- `tokens.py`
-- `rsml.toml.example`
-- `LICENSE`
-- `README.md`
-- `CHANGELOG`
-- `pyproject.toml` and `__init__.py`
-- `.gitignore`
+- toml-based configuration (`rsml.toml`) (`rsml.config`)
+- unit test suite (`tests/`)
+- RFC 4155 and mboxrd compliant `.mbox` file generator (`rsml.mbox`)
+- HMAC-SHA256 token generation for verify/unsub links (`rsml.tokens`)
+- mailing list posting via LMTP, with `all` / `subscribers` permission mode
+- two-step subscription via `/list/subscribe` and `/list/verify`
+- `/list/archive` endpoint for `.mbox` archive retrieval of the mailing list
+- one-click unsubscribe with `List-Unsubscribe` and `List-Unsubscribe-Post` (RFC 8058)
