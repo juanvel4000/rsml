@@ -4,6 +4,7 @@ from aiosmtpd.controller import Controller
 from aiosmtpd.lmtp import LMTP
 
 from .config import RSMLConfig
+from .mailer import Mailer
 from .storage import Storage
 
 
@@ -16,6 +17,7 @@ class LMTPHandler:
     def __init__(self, config: RSMLConfig, storage: Storage):
         self.config = config
         self.storage = storage
+        self.mailer = Mailer(config)
 
     async def handle_RCPT(
         self, server, session, envelope, address, rcpt_options
@@ -27,6 +29,9 @@ class LMTPHandler:
 
     async def handle_DATA(self, server, session, envelope) -> str:
         self.storage.store_message(envelope.content)
+        await self.mailer.forward_message(
+            envelope.content, self.storage.get_subscribers()
+        )
         return "250 OK"
 
 

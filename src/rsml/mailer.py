@@ -1,8 +1,13 @@
 """system mail generator"""
 
+import copy
+from collections.abc import Iterable
+from email import policy
 from email.message import EmailMessage
+from email.parser import BytesParser
 from email.utils import formatdate
 
+import aiosmtplib
 from email_validator import EmailNotValidError, validate_email
 
 from .config import RSMLConfig
@@ -34,10 +39,8 @@ class Mailer:
             raise ValueError("invalid email")
 
         token = generate_token(self.config.server_secret, "unsub", email)
-        # TODO: support an actual http url in config.py
-        # use the list_id for now
         message["List-Unsubscribe"] = (
-            f"<https://{self.config.list_id}/list/unsubscribe?email={email}&token={token}>"
+            f"<{self.config.http_url}/list/unsubscribe?email={email}&token={token}>"
         )
         message["List-Unsubscribe-Post"] = "List-Unsubscribe=One-Click"
 
@@ -59,9 +62,22 @@ class Mailer:
         msg = self.add_headers(msg)
 
         msg.set_content(
-            f"<https://{self.config.list_id}/list/verify?email={email}&token={token}>"
+            f"<{self.config.http_url}/list/verify?email={email}&token={token}>"
         )
         return msg.as_bytes()
+
+    async def forward_message(self, raw: bytes, subscribers: Iterable[str]) -> None:
+        """forward a received mail to all the subscribers"""
+        og = self.add_headers(BytesParser(policy=policy.default).parsebytes(raw))
+        for sub in subscribers:
+            msg = copy.deepcopy(og)
+            msg = self.add_unsubscribe_headers(sub, msg)
+            await aiosmtplib.send(
+                msg,
+                hostname=self.config.relay_host,
+                port=self.config.relay_port,
+                recipients=[sub],
+            )
 
     def __repr__(self) -> str:
         return f"Mailer(config={self.config})"
