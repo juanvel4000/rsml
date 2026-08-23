@@ -26,6 +26,7 @@ class Mailer:
         if self.config.precedence == "list":
             email["Precedence"] = "list"
         if self.config.fix_date:
+            del email["Date"]
             email["Date"] = formatdate()
         return email
 
