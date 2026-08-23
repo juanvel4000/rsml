@@ -1,4 +1,5 @@
 from .config import RSMLConfig, load_config, validate_config
+from .mailer import Mailer
 from .mbox import Mbox, MboxItem
 from .storage import Storage
 from .tokens import generate_token

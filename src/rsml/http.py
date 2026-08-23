@@ -1,4 +1,4 @@
-"""a flask server for the RSML endpoints; dumb"""
+"""a dumb flask server for the RSML endpoints"""
 
 import hmac
 import os
@@ -23,6 +23,7 @@ storage = Storage(config)
 
 @http.route("/list/subscribe", methods=["POST"])
 def subscribe():
+    """process an email and return a verification token"""
     data = request.get_json(silent=True)
 
     if not isinstance(data, dict):
@@ -41,6 +42,7 @@ def subscribe():
 
 @http.route("/list/verify")
 def verify():
+    """subscribe the email using the verification token"""
     token = request.args.get("token")
 
     email = request.args.get("email")
@@ -63,6 +65,7 @@ def verify():
 
 @http.route("/list/unsubscribe")
 def unsubscribe():
+    """unsubscribe the user using an unsubscription token"""
     token = request.args.get("token")
 
     email = request.args.get("email")
@@ -85,6 +88,7 @@ def unsubscribe():
 
 @http.route("/list/archive")
 def archive():
+    """retrieve an mbox containing an archive of mails"""
     date = request.args.get("date") or "today"
     limit = request.args.get("limit") or config.archive_limit
     order = request.args.get("order") or "desc"
@@ -109,7 +113,7 @@ def archive():
             "success": False,
             "error": f"limit cannot be greater than max_limit ({config.archive_max})",
         }, 400
-    msgs = msgs[:50]  # TODO: apply order
+    msgs = msgs[:limit]  # TODO: apply order
     final = []
     for msg in msgs:
         message = BytesParser(policy=policy.default).parsebytes(msg.read_bytes())
