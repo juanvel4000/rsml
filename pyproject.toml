@@ -3,7 +3,7 @@ name = "rsml"
 version = "0.1.0"
 description = "really simple mailing lists"
 license = "BSD-3-Clause"
-dependencies = ["aiosmtpd", "aiosmtplib", "flask", "email-validator"]
+dependencies = ["aiosmtpd", "aiosmtplib", "flask[async]", "email-validator"]
 requires-python = ">=3.11"
 
 [build-system]

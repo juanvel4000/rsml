@@ -1,6 +1,7 @@
 """system mail generator"""
 
 import copy
+import smtplib
 from collections.abc import Iterable
 from email import policy
 from email.message import EmailMessage
@@ -47,7 +48,7 @@ class Mailer:
 
         return message
 
-    def generate_verification(self, email: str) -> bytes:
+    def generate_verification(self, email: str) -> EmailMessage:
         """generate a verification mail"""
         try:
             email = validate_email(email, check_deliverability=False).normalized
@@ -65,7 +66,7 @@ class Mailer:
         msg.set_content(
             f"<{self.config.http_url}/list/verify?email={email}&token={token}>"
         )
-        return msg.as_bytes()
+        return msg
 
     async def forward_message(self, raw: bytes, subscribers: Iterable[str]) -> None:
         """forward a received mail to all the subscribers"""
@@ -73,12 +74,16 @@ class Mailer:
         for sub in subscribers:
             msg = copy.deepcopy(og)
             msg = self.add_unsubscribe_headers(sub, msg)
-            await aiosmtplib.send(
-                msg,
-                hostname=self.config.relay_host,
-                port=self.config.relay_port,
-                recipients=[sub],
-            )
+            _ = await self.send(msg, sub)
+
+    async def send(self, message: EmailMessage, recipient: str):
+        """thin wrapper around aiosmtplib.send"""
+        return await aiosmtplib.send(
+            message,
+            hostname=self.config.relay_host,
+            port=self.config.relay_port,
+            recipients=[recipient],
+        )
 
     def __repr__(self) -> str:
         return f"Mailer(config={self.config})"

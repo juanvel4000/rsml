@@ -9,6 +9,7 @@ from email_validator import EmailNotValidError, validate_email
 from flask import Blueprint, Flask, current_app, make_response, request
 
 from .config import RSMLConfig
+from .mailer import Mailer
 from .mbox import Mbox, MboxItem
 from .storage import Storage
 from .tokens import generate_token
@@ -20,14 +21,16 @@ def create_app(config: RSMLConfig) -> Flask:
     app = Flask(__name__)
     app.config["RSML_CONFIG"] = config
     app.config["RSML_STORAGE"] = Storage(config)
+    app.config["RSML_MAILER"] = Mailer(config)
     app.register_blueprint(http)
     return app
 
 
 @http.route("/list/subscribe", methods=["POST"])
-def subscribe():
+async def subscribe():
     """process an email and return a verification token"""
     config = current_app.config["RSML_CONFIG"]
+    mailer = current_app.config["RSML_MAILER"]
     data = request.get_json(silent=True)
 
     if not isinstance(data, dict):
@@ -39,9 +42,8 @@ def subscribe():
     except EmailNotValidError:
         return {"success": False, "error": "invalid email address"}, 400
 
-    # TODO: send the token via lmtp/smtp instead of sending it through here
-    token = generate_token(config.server_secret, "verify", email)
-    return {"success": True, "token": token}, 202
+    await mailer.send(mailer.generate_verification(email), email)
+    return {"success": True}, 202
 
 
 @http.route("/list/verify")

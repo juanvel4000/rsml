@@ -22,12 +22,22 @@ class LMTPHandler:
     async def handle_RCPT(
         self, server, session, envelope, address, rcpt_options
     ) -> str:
-        if address != self.config.posting_email:
+        if address.lower() != self.config.posting_email.lower():
             return "550 not relaying to that address"
+
+        if not self.config.posting:
+            return "550 5.7.1 delivery not authorized"
+
+        if (
+            self.config.posting_permissions == "subscribers"
+            and not self.storage.is_subscribed(envelope.mail_from)
+        ):
+            return "550 5.7.1 delivery not authorized"
         envelope.rcpt_tos.append(address)
         return "250 OK"
 
     async def handle_DATA(self, server, session, envelope) -> str:
+
         self.storage.store_message(envelope.content)
         await self.mailer.forward_message(
             envelope.content, self.storage.get_subscribers()
