@@ -134,5 +134,10 @@ def build_structure(
     if make_db:
         config.subscriber_db.parent.mkdir(parents=True, exist_ok=True)
 
-        with sqlite3.connect(config.subscriber_db):
-            pass
+        with sqlite3.connect(config.subscriber_db) as db:
+            _ = db.execute("""
+                CREATE TABLE IF NOT EXISTS subscribers (
+                    email TEXT PRIMARY KEY,
+                    subscribed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
+                )
+            """)
