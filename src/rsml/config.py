@@ -105,7 +105,7 @@ def load_config(
         raise ValueError(f"invalid toml in {str(path)}") from exc
 
     config = RSMLConfig(
-        subscriber_db=Path(data.get("subscriber_db", "/var/lib/rsml/subs.db")),
+        subscriber_db=Path(data.get("subscriber_db", "/var/lib/rsml/subscribers.db")),
         email_directory=Path(data.get("email_directory", "/var/lib/rsml/mail")),
         server_secret=data.get("server_secret"),
         posting_email=data.get("posting_email", "dev@localhost"),

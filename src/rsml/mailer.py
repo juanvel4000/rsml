@@ -1,3 +1,5 @@
+"""system mail generator"""
+
 from email.message import EmailMessage
 from email.utils import formatdate
 
@@ -8,10 +10,13 @@ from .tokens import generate_token
 
 
 class Mailer:
+    """class for mailer"""
+
     def __init__(self, config: RSMLConfig):
         self.config = config
 
     def add_headers(self, email: EmailMessage) -> EmailMessage:
+        """add identification headers, specified by config.py"""
         email["List-ID"] = f"{self.config.display_name} <{self.config.list_id}>"
         if self.config.precedence == "list":
             email["Precedence"] = "list"
@@ -22,6 +27,7 @@ class Mailer:
     def add_unsubscribe_headers(
         self, email: str, message: EmailMessage
     ) -> EmailMessage:
+        """add unsubscribe headers for mass-forwarded mails"""
         try:
             email = validate_email(email, check_deliverability=False).normalized
         except EmailNotValidError:
@@ -38,6 +44,7 @@ class Mailer:
         return message
 
     def generate_verification(self, email: str) -> bytes:
+        """generate a verification mail"""
         try:
             email = validate_email(email, check_deliverability=False).normalized
         except EmailNotValidError:
