@@ -1,5 +1,9 @@
 # rsml
 
+![PyPI License](https://img.shields.io/pypi/l/rsml)
+![PyPI Status](https://img.shields.io/pypi/status/rsml)
+![PyPI Version](https://img.shields.io/pypi/v/rsml)
+
 a small, self-hosted mailing list system.
 
 **rsml** is a **m**ailing **l**ist **m**anager system written in python built with minimalism in mind, it does not try to be a GNU Mailman competitor but rather a simpler alternative.
