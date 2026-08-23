@@ -1,10 +1,14 @@
 [project]
 name = "rsml"
-version = "0.1.0"
-description = "really simple mailing lists"
+dynamic = ["version"]
+description = "a small, self-hosted mailing list system."
+readme = "README.md"
 license = "BSD-3-Clause"
 dependencies = ["aiosmtpd", "aiosmtplib", "flask[async]", "email-validator"]
 requires-python = ">=3.11"
+
+[tool.hatch.version]
+path = "src/rsml/__init__.py"
 
 [build-system]
 requires = ["hatchling"]
