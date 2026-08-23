@@ -1,3 +1,5 @@
+"""RFC 4155-compliant mbox manager"""
+
 from dataclasses import dataclass
 from datetime import datetime
 from email.message import EmailMessage
@@ -16,15 +18,25 @@ class MboxItem:
     def to_bytes(self) -> bytes:
         result = bytearray()
 
-        result.extend(f"From {self.sender} {self.timestamp}\r\n".encode())
+        day = f"{self.timestamp.day:2d}"
+        time = self.timestamp.strftime(f"%a %b {day} %H:%M:%S %Y")
+
+        result.extend(f"From {self.sender} {time}\n".encode("ascii"))
 
         message = self.message.as_bytes()
 
         for line in message.splitlines(keepends=True):
-            if line.lstrip(b">").startswith(b"From "):
+            idx = 0
+            while idx < len(line) and line[idx : idx + 1] == b">":
+                idx += 1
+            if line[idx:].startswith(b"From "):
                 result.extend(b">")
 
             result.extend(line)
+
+        if not result.endswith(b"\n"):
+            result.extend(b"\n")
+        result.extend(b"\n")
 
         return bytes(result)
 
