@@ -79,6 +79,16 @@ def validate_config(
         if not config.relay_port:
             raise ValueError("config.relay_port is empty")
 
+        if not config.http_host:
+            raise ValueError("config.http_host is empty")
+        if not config.http_port:
+            raise ValueError("config.http_port is empty")
+
+        if not config.lmtp_host:
+            raise ValueError("config.lmtp_host is empty")
+        if not config.lmtp_port:
+            raise ValueError("config.lmtp_port is empty")
+
         # validate vars with specific string expectations
         if config.precedence not in ["list", "disabled"]:
             raise ValueError(

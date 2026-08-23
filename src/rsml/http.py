@@ -125,7 +125,7 @@ def archive():
             "success": False,
             "error": f"limit cannot be greater than max_limit ({config.archive_max})",
         }, 400
-    msgs = msgs[:limit]  # TODO: apply order
+    msgs = sorted(msgs, key=lambda p: p.stat().st_mtime, reverse=(order == "desc"))
     final = []
     for msg in msgs:
         message = BytesParser(policy=policy.default).parsebytes(msg.read_bytes())
