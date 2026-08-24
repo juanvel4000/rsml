@@ -71,9 +71,11 @@ def verify_confirm():
 <html lang="en">
     <head>
         <title>{escape(config.display_name)} (email verification)</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
     </head>
     <body>
-        <h1>{escape(config.display_name)} <{escape(config.list_id)}</h1>
+        <h1>{escape(config.display_name)} &lt;{escape(config.list_id)}&gt;</h1>
         <p>are you sure you want to subscribe to {escape(config.display_name)}? ({escape(email)})</p>
         <form action="/list/verify" method="POST">
             <input type="hidden" name="email" value="{escape(email)}" />
