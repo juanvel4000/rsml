@@ -162,8 +162,13 @@ def archive():
     else:
         try:
             year, month, day = map(int, date.split("-"))
+            # validate it by trying to make a datetime
+            datetime(year, month, day)
         except ValueError:
             return {"success": False, "error": "invalid date"}, 400
+
+    if limit <= 0:
+        return {"success": False, "error": "limit must be greater than zero"}, 400
 
     if limit > config.archive_max:
         return {

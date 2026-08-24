@@ -138,6 +138,16 @@ def test_archive_over_max(client, config):
     assert resp.status_code == 400
 
 
-def test_archive_bad_limit(client, config):
+def test_archive_bad_limit(client):
     resp = client.get("/list/archive?limit=invalid-limit")
+    assert resp.status_code == 400
+
+
+def test_archive_negative_limit(client):
+    resp = client.get("/list/archive?limit=-5")
+    assert resp.status_code == 400
+
+
+def test_archive_invalid_month_day(client):
+    resp = client.get("/list/archive?date=1900-13-99")
     assert resp.status_code == 400

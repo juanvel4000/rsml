@@ -1,4 +1,5 @@
 from email.message import EmailMessage
+from urllib.parse import quote as escape_quote
 
 import pytest
 
@@ -56,7 +57,7 @@ def test_add_unsubscribe_headers(config):
     expected_token = generate_token(
         config.server_secret, "unsub", "receiver@example.com"
     )
-    expected_url = f"<{config.http_url}/list/unsubscribe?email=receiver@example.com&token={expected_token}>"
+    expected_url = f"<{config.http_url}/list/unsubscribe?email={escape_quote('receiver@example.com')}&token={expected_token}>"
     assert fixed["List-Unsubscribe"] == expected_url
     assert fixed["List-Unsubscribe-Post"] == "List-Unsubscribe=One-Click"
 
@@ -68,6 +69,13 @@ def test_generate_verification(config):
     expected_token = generate_token(
         config.server_secret, "verify", "receiver@example.com"
     )
-    expected_url = f"<{config.http_url}/list/verify?email=receiver@example.com&token={expected_token}>"
+    expected_url = f"<{config.http_url}/list/verify?email={escape_quote('receiver@example.com')}&token={expected_token}>"
     assert message["Subject"] == f"{config.display_name} - email verification"
     assert expected_url in message.get_content()
+
+
+def test_add_unsubscribe_headers_encodes_special_chars(config):
+    mailer = Mailer(config)
+    message = EmailMessage()
+    fixed = mailer.add_unsubscribe_headers("user+tag@example.com", message)
+    assert "user%2Btag%40example.com" in fixed["List-Unsubscribe"]

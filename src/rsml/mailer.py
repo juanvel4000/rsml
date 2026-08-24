@@ -6,6 +6,7 @@ from email import policy
 from email.message import EmailMessage
 from email.parser import BytesParser
 from email.utils import formatdate
+from urllib.parse import quote as quote_escape
 
 import aiosmtplib
 from email_validator import EmailNotValidError, validate_email
@@ -41,7 +42,7 @@ class Mailer:
 
         token = generate_token(self.config.server_secret, "unsub", email)
         message["List-Unsubscribe"] = (
-            f"<{self.config.http_url}/list/unsubscribe?email={email}&token={token}>"
+            f"<{self.config.http_url}/list/unsubscribe?email={quote_escape(email)}&token={token}>"
         )
         message["List-Unsubscribe-Post"] = "List-Unsubscribe=One-Click"
 
@@ -63,7 +64,7 @@ class Mailer:
         msg = self.add_headers(msg)
 
         msg.set_content(
-            f"<{self.config.http_url}/list/verify?email={email}&token={token}>"
+            f"<{self.config.http_url}/list/verify?email={quote_escape(email)}&token={token}>"
         )
         return msg
 

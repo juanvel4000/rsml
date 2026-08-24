@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - update verify tests for GET/POST split (`test_http.py`)
+- validate specified dates in `GET /list/archive` (`http.py`)
+- reject non-positive `limit` in `GET /list/archive` (`http.py`)
+- escape email addresses in `mailer.py` URLs
 
 ## [0.2.0] - 2026-08-24
 
