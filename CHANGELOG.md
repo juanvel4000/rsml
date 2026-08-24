@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- add rate-limiting to `POST /list/subscribe` (`http.py`)
+
 ### Fixed
 
 - do not request upload permissions in `test.yml`

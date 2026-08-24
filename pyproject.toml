@@ -4,7 +4,7 @@ dynamic = ["version"]
 description = "a small, self-hosted mailing list system."
 readme = "README.md"
 license = "BSD-3-Clause"
-dependencies = ["aiosmtpd", "aiosmtplib", "flask[async]", "email-validator"]
+dependencies = ["aiosmtpd", "aiosmtplib", "flask[async]", "email-validator", "Flask-Limiter"]
 requires-python = ">=3.11"
 
 keywords = [ "mailing-list", "email", "self-hosted"]

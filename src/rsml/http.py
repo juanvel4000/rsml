@@ -7,6 +7,8 @@ from email.parser import BytesParser
 
 from email_validator import EmailNotValidError, validate_email
 from flask import Blueprint, Flask, current_app, make_response, request
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 from markupsafe import escape
 
 from .config import RSMLConfig
@@ -16,6 +18,7 @@ from .storage import Storage
 from .tokens import generate_token
 
 http = Blueprint("rsml", __name__)
+limiter = Limiter(get_remote_address, storage_uri="memory://")
 
 
 def create_app(config: RSMLConfig) -> Flask:
@@ -24,10 +27,12 @@ def create_app(config: RSMLConfig) -> Flask:
     app.config["RSML_STORAGE"] = Storage(config)
     app.config["RSML_MAILER"] = Mailer(config)
     app.register_blueprint(http)
+    limiter.init_app(app)
     return app
 
 
 @http.route("/list/subscribe", methods=["POST"])
+@limiter.limit("5 per hour")
 async def subscribe():
     """process an email and return a verification token"""
     mailer = current_app.config["RSML_MAILER"]
