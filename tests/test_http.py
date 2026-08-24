@@ -36,7 +36,8 @@ def config(tmp_path) -> RSMLConfig:
 def app(config):
     app = create_app(config)
     app.config["RSML_MAILER"].send = AsyncMock()
-    return app
+    yield app
+    app.config["RSML_STORAGE"].close()
 
 
 @pytest.fixture

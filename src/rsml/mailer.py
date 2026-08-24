@@ -67,13 +67,20 @@ class Mailer:
         )
         return msg
 
-    async def forward_message(self, raw: bytes, subscribers: Iterable[str]) -> None:
-        """forward a received mail to all the subscribers"""
+    async def forward_message(
+        self, raw: bytes, subscribers: Iterable[str]
+    ) -> list[str]:
+        """forward a received mail to all the subscribers, returns list of failed addresses"""
         og = self.add_headers(BytesParser(policy=policy.default).parsebytes(raw))
+        failed = []
         for sub in subscribers:
-            msg = copy.deepcopy(og)
-            msg = self.add_unsubscribe_headers(sub, msg)
-            _ = await self.send(msg, sub)
+            try:
+                msg = copy.deepcopy(og)
+                msg = self.add_unsubscribe_headers(sub, msg)
+                _ = await self.send(msg, sub)
+            except Exception:
+                failed.append(sub)
+        return failed
 
     async def send(self, message: EmailMessage, recipient: str):
         """thin wrapper around aiosmtplib.send"""

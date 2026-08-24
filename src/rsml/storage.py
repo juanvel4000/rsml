@@ -16,6 +16,7 @@ class Storage:
 
         validate_config(config)
         build_structure(config)
+        self.db = sqlite3.connect(config.subscriber_db, check_same_thread=False)
 
     def store_message(self, message: bytes) -> Path:
         """store the message in a file"""
@@ -61,30 +62,31 @@ class Storage:
         yield from self.config.email_directory.glob(globstr)
 
     def add_subscriber(self, email: str) -> bool:
-        with sqlite3.connect(self.config.subscriber_db) as db:
-            _ = db.execute(
-                "INSERT OR IGNORE INTO subscribers (email) VALUES (?)", (email,)
-            )
+        _ = self.db.execute(
+            "INSERT OR IGNORE INTO subscribers (email) VALUES (?)", (email,)
+        )
+
+        self.db.commit()
         return True
 
     def remove_subscriber(self, email: str) -> bool:
-        with sqlite3.connect(self.config.subscriber_db) as db:
-            _ = db.execute("DELETE FROM subscribers WHERE email = ?", (email,))
+        _ = self.db.execute("DELETE FROM subscribers WHERE email = ?", (email,))
+        self.db.commit()
         return True
 
     def is_subscribed(self, email: str) -> bool:
-        with sqlite3.connect(self.config.subscriber_db) as db:
-            row = db.execute(
-                "SELECT 1 FROM subscribers WHERE email = ?", (email,)
-            ).fetchone()
-
+        row = self.db.execute(
+            "SELECT 1 FROM subscribers WHERE email = ?", (email,)
+        ).fetchone()
         return row is not None
 
     def get_subscribers(self) -> Iterator[str]:
-        with sqlite3.connect(self.config.subscriber_db) as db:
-            rows = db.execute("SELECT email FROM subscribers")
-            for (email,) in rows:
-                yield email
+        rows = self.db.execute("SELECT email FROM subscribers")
+        for (email,) in rows:
+            yield email
+
+    def close(self) -> None:
+        self.db.close()
 
     def __repr__(self) -> str:
         return f"Storage(config={self.config})"

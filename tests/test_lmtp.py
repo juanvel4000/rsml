@@ -44,7 +44,8 @@ def handler(config):
     storage = Storage(config)
     h = LMTPHandler(config, storage)
     h.mailer.forward_message = AsyncMock()
-    return h, storage
+    yield h, storage
+    storage.close()
 
 
 @pytest.mark.asyncio

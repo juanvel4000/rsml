@@ -6,7 +6,7 @@ import sys
 
 from .config import RSMLConfig, load_config
 from .http import create_app
-from .lmtp import controller_init
+from .lmtp import controller_init, controller_stop
 
 
 def run_http(config: RSMLConfig):
@@ -14,20 +14,23 @@ def run_http(config: RSMLConfig):
     print("rsml http server")
     print(f"> listening on {config.http_host}:{config.http_port}")
     app = create_app(config)
-    app.run(host=config.http_host, port=config.http_port)
+    try:
+        app.run(host=config.http_host, port=config.http_port)
+    finally:
+        app.config["RSML_STORAGE"].close()
 
 
 def run_lmtp(config: RSMLConfig):
     """initialize the lmtp server"""
     print("rsml lmtp server")
     print(f"> listening on {config.lmtp_host}:{config.lmtp_port}")
-    controller = controller_init(config)
+    controller, storage = controller_init(config)
     try:
         signal.pause()
     except KeyboardInterrupt:
         pass
     finally:
-        controller.stop()
+        controller_stop(controller, storage)
 
 
 def print_usage() -> None:

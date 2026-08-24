@@ -54,7 +54,7 @@ class LMTPHandler:
         return "250 OK"
 
 
-def controller_init(config: RSMLConfig) -> LMTPController:
+def controller_init(config: RSMLConfig) -> tuple[LMTPController, Storage]:
     """initialize the lmtp controller"""
     storage = Storage(config)
     controller = LMTPController(
@@ -63,4 +63,10 @@ def controller_init(config: RSMLConfig) -> LMTPController:
 
     controller.start()
 
-    return controller
+    return controller, storage
+
+
+def controller_stop(controller: LMTPController, storage: Storage) -> None:
+    """finalize the lmtp controller"""
+    controller.stop()
+    storage.close()

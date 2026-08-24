@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- use a single sqlite3 instance across the `Storage` class (`storage.py`)
 - improved subscription verification handling (`http.py`)
 
 ## [0.1.5] - 2026-08-23

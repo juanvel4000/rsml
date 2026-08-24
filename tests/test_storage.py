@@ -27,8 +27,9 @@ def storage(tmp_path):
         http_host="127.0.0.1",
         http_port=8080,
     )
-
-    return Storage(config)
+    storage = Storage(config)
+    yield storage
+    storage.close()
 
 
 @pytest.fixture
