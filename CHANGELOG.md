@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- do not request upload permissions in `test.yml`
+
 ### Changed
 
 - use a single sqlite3 instance across the `Storage` class (`storage.py`)
