@@ -50,9 +50,18 @@ def test_subscribe_valid(client):
     assert resp.status_code == 202
 
 
-def test_verify_valid(client, config, app):
+def test_verify_confirm_does_not_subscribe(client, config, app):
     token = generate_token(config.server_secret, "verify", "test@example.com")
     resp = client.get(f"/list/verify?email=test@example.com&token={token}")
+    assert resp.status_code == 200
+    assert not app.config["RSML_STORAGE"].is_subscribed("test@example.com")
+
+
+def test_verify_valid(client, config, app):
+    token = generate_token(config.server_secret, "verify", "test@example.com")
+    resp = client.post(
+        f"/list/verify", data={"email": "test@example.com", "token": token}
+    )
     assert app.config["RSML_STORAGE"].is_subscribed("test@example.com")
     assert resp.status_code == 201
 
