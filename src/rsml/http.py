@@ -7,6 +7,7 @@ from email.parser import BytesParser
 
 from email_validator import EmailNotValidError, validate_email
 from flask import Blueprint, Flask, current_app, make_response, request
+from markupsafe import escape
 
 from .config import RSMLConfig
 from .mailer import Mailer
@@ -45,11 +46,10 @@ async def subscribe():
     return {"success": True}, 202
 
 
-@http.route("/list/verify")
-def verify():
+@http.route("/list/verify", methods=["GET"])
+def verify_confirm():
     """subscribe the email using the verification token"""
     config = current_app.config["RSML_CONFIG"]
-    storage = current_app.config["RSML_STORAGE"]
     token = request.args.get("token")
 
     email = request.args.get("email")
@@ -66,6 +66,43 @@ def verify():
     ):
         return {"success": False, "error": "token does not match with the email"}, 403
 
+    return f"""
+<!doctype html>
+<html lang="en">
+    <head>
+        <title>{escape(config.display_name)} (email verification)</title>
+    </head>
+    <body>
+        <h1>{escape(config.display_name)} <{escape(config.list_id)}</h1>
+        <p>are you sure you want to subscribe to {escape(config.display_name)}? ({escape(email)})</p>
+        <form action="/list/verify" method="POST">
+            <input type="hidden" name="email" value="{escape(email)}" />
+            <input type="hidden" name="token" value="{escape(token)}" />
+            <button type="submit">yes, subscribe</button>
+        </form>
+    </body>
+</html>
+
+"""
+
+
+@http.route("/list/verify", methods=["POST"])
+def verify():
+    config = current_app.config["RSML_CONFIG"]
+    storage = current_app.config["RSML_STORAGE"]
+    email = request.form.get("email")
+    token = request.form.get("token")
+    if not email:
+        return {"success": False, "error": "email is required"}, 400
+
+    try:
+        email = validate_email(email, check_deliverability=False).normalized
+    except EmailNotValidError:
+        return {"success": False, "error": "invalid email address"}, 400
+    if not hmac.compare_digest(
+        generate_token(config.server_secret, "verify", email), token or ""
+    ):
+        return {"success": False, "error": "token does not match with the email"}, 403
     storage.add_subscriber(email)
     return {"success": True}, 201
 
@@ -102,20 +139,22 @@ def archive():
     storage = current_app.config["RSML_STORAGE"]
     date = request.args.get("date") or "today"
     limit = request.args.get("limit") or config.archive_limit
-    order = request.args.get("order") or "desc"
+    order = (request.args.get("order") or "desc").lower().strip()
+
+    if order not in ["desc", "asc"]:
+        return {"success": False, "error": "order must be either 'desc' or 'asc'"}, 400
     try:
         limit = int(limit)
     except ValueError:
         return {"success": False, "error": "limit must be an integer"}, 400
     if date == "today":
         now = datetime.now(UTC)
-        msgs = list(storage.iter_messages(now.year, now.month, now.day))
+        year, month, day = now.year, now.month, now.day
     elif date == "all":
-        msgs = list(storage.iter_messages("all", "all", "all"))
+        year, month, day = "all", "all", "all"
     else:
         try:
             year, month, day = map(int, date.split("-"))
-            msgs = list(storage.iter_messages(year, month, day))
         except ValueError:
             return {"success": False, "error": "invalid date"}, 400
 
@@ -124,7 +163,10 @@ def archive():
             "success": False,
             "error": f"limit cannot be greater than max_limit ({config.archive_max})",
         }, 400
+
+    msgs = list(storage.iter_messages(year, month, day))
     msgs = sorted(msgs, key=lambda p: p.stat().st_mtime, reverse=(order == "desc"))
+    msgs = msgs[:limit]
     final = []
     for msg in msgs:
         message = BytesParser(policy=policy.default).parsebytes(msg.read_bytes())
