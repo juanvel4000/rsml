@@ -10,13 +10,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - add rate-limiting to `POST /list/subscribe` (`http.py`)
+- allow using `rsml-http` and `rsml-lmtp` as separate entrypoints in `cli.py`
 
 ### Fixed
 
-- do not request upload permissions in `test.yml`
+- do not request upload permissions in `tests.yml`
+- fix the validation order on `/list/archive` (`http.py`)
+- fix the `[:limit]` slice bug in `/list/archive` (`http.py`)
 
 ### Changed
 
+- isolated per-recipient failure in `Mailer.forward_message` (`mailer.py`)
 - use a single sqlite3 instance across the `Storage` class (`storage.py`)
 - improved subscription verification handling (`http.py`)
 

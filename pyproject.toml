@@ -48,3 +48,5 @@ dev = [
 
 [project.scripts]
 rsml = "rsml.cli:main"
+rsml-http = "rsml.cli:main"
+rsml-lmtp = "rsml.cli:main"

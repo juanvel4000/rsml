@@ -55,6 +55,19 @@ def main():
     argv = sys.argv
     argc = len(argv)
 
+    match os.path.basename(argv[0]):
+        case "rsml-http":
+            config = load_config(os.getenv("RSML_CONFIG", "rsml.toml"))
+            run_http(config)
+            sys.exit(0)
+        case "rsml-lmtp":
+            config = load_config(os.getenv("RSML_CONFIG", "rsml.toml"))
+            run_lmtp(config)
+            sys.exit(0)
+
+        case _:
+            pass
+
     if argc <= 1:
         print_usage()
         sys.exit(1)
