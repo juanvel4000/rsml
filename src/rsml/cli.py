@@ -3,6 +3,7 @@
 import os
 import signal
 import sys
+from pathlib import Path
 
 from .config import RSMLConfig, load_config
 from .http import create_app
@@ -41,14 +42,41 @@ def print_usage() -> None:
 def print_help() -> None:
     """print help message"""
     print_usage()
-    print("really simple mailing lists")
-    print("tiny mlm implementation")
+    print("really simple mailing lists (rsml)")
+    print("a small, self-hosted mailing list system.")
     print("commands:")
     print("  http   starts the rsml http server")
     print("  lmtp   starts the rsml lmtp server")
     print("  help   show this message")
     print("licensed under BSD-3-Clause")
-    print("RSML_CONFIG= env variable to specify a config file, defaults to ./rsml.toml")
+
+
+def get_config() -> RSMLConfig:
+    env_path = os.getenv("RSML_CONFIG")
+    if env_path:
+        try:
+            return load_config(Path(env_path))
+        except Exception:
+            pass
+
+    options = [
+        Path("./rsml.toml"),
+        Path("~/.rsml.toml").expanduser(),
+        Path("~/.config/rsml/rsml.toml").expanduser(),
+        Path("~/.rsml/rsml.toml").expanduser(),
+        Path("/etc/rsml.toml"),
+        Path("/etc/rsml.d/rsml.toml"),
+    ]
+
+    for fil in options:
+        if fil.is_file():
+            try:
+                return load_config(fil)
+            except Exception:
+                continue
+
+    print("could not find a valid rsml.toml")
+    sys.exit(1)
 
 
 def main():
@@ -57,11 +85,11 @@ def main():
 
     match os.path.basename(argv[0]):
         case "rsml-http":
-            config = load_config(os.getenv("RSML_CONFIG", "rsml.toml"))
+            config = get_config()
             run_http(config)
             sys.exit(0)
         case "rsml-lmtp":
-            config = load_config(os.getenv("RSML_CONFIG", "rsml.toml"))
+            config = get_config()
             run_lmtp(config)
             sys.exit(0)
 
@@ -74,11 +102,11 @@ def main():
 
     match argv[1]:
         case "http":
-            config = load_config(os.getenv("RSML_CONFIG", "rsml.toml"))
+            config = get_config()
             run_http(config)
             sys.exit(0)
         case "lmtp":
-            config = load_config(os.getenv("RSML_CONFIG", "rsml.toml"))
+            config = get_config()
             run_lmtp(config)
             sys.exit(0)
         case "help":
