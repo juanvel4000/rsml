@@ -1,0 +1,33 @@
+services:
+  rsml-http:
+    build:
+      context: .
+      dockerfile: Containerfile
+    ports:
+      - "8080:8080"
+    command: "http"
+    volumes:
+      - rsml-data:/var/lib/rsml:Z
+      - ./rsml.toml:/home/rsml/rsml.toml:Z,ro
+    environment:
+      - RSML_CONFIG=/home/rsml/rsml.toml
+    restart: unless-stopped
+    image: rsml-latest
+
+  rsml-lmtp:
+    build:
+      context: .
+      dockerfile: Containerfile
+    ports:
+      - "8024:8024"
+    command: "lmtp"
+    volumes:
+      - rsml-data:/var/lib/rsml:Z
+      - ./rsml.toml:/home/rsml/rsml.toml:Z,ro
+    environment:
+      - RSML_CONFIG=/home/rsml/rsml.toml
+    restart: unless-stopped
+    image: rsml-latest
+
+volumes:
+  rsml-data:
