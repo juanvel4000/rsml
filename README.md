@@ -52,9 +52,22 @@ running the test suite can be done with `pytest`
   $ pytest -vs . # run the unit tests
 ```
 
+redis support for the rate limiter requires the `redis` optional dependency set to be installed
+
+```sh
+  $ pip install -e ".[redis]"
+```
+
 ## spec
 
 a document outlining the technical specifications of the project can be found in this repository as [SPEC.md](SPEC.md)
+
+## project status
+
+rsml is in active development. while functional, it is **not yet production-ready** for real-world usage.
+
+- [CHANGELOG.md](CHANGELOG.md) -- release history
+- [CONTRIBUTING.md](CONTRIBUTING.md) -- how to report bugs and send patches
 
 ## license
 

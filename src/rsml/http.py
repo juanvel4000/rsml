@@ -18,7 +18,7 @@ from .storage import Storage
 from .tokens import generate_token
 
 http = Blueprint("rsml", __name__)
-limiter = Limiter(get_remote_address, storage_uri="memory://")
+limiter = Limiter(get_remote_address)
 
 
 def create_app(config: RSMLConfig) -> Flask:
@@ -26,6 +26,7 @@ def create_app(config: RSMLConfig) -> Flask:
     app.config["RSML_CONFIG"] = config
     app.config["RSML_STORAGE"] = Storage(config)
     app.config["RSML_MAILER"] = Mailer(config)
+    app.config["RATELIMIT_STORAGE_URI"] = config.limiter_storage_uri
     app.register_blueprint(http)
     limiter.init_app(app)
     return app

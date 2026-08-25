@@ -35,6 +35,8 @@ class RSMLConfig:
     http_host: str = "127.0.0.1"
     http_port: int = 8080
 
+    limiter_storage_uri: str = "memory://"
+
 
 def validate_config(
     config: RSMLConfig,
@@ -151,6 +153,7 @@ def load_config(
         lmtp_port=data.get("lmtp_port", 8024),
         http_host=data.get("http_host", "127.0.0.1"),
         http_port=data.get("http_port", 8080),
+        limiter_storage_uri=data.get("limiter_storage_uri", "memory://"),
     )
     if validate:
         validate_config(config, validate_paths=False)

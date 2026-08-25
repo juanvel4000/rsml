@@ -30,6 +30,7 @@ def config(tmp_path) -> RSMLConfig:
         lmtp_port=8024,
         http_host="127.0.0.1",
         http_port=8080,
+        limiter_storage_uri="memory://",
     )
 
 

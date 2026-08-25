@@ -93,6 +93,7 @@ The following configuration options are available, with the specified values as 
 - `relay_host` and `relay_port`: hostname and port for the MTA/SMTP server (default: `127.0.0.1` and `25` respectively)
 - `http_host` and `http_port`: hostname and port for the HTTP server (default: `127.0.0.1` and `8080` respectively)
 - `lmtp_host` and `lmtp_port`: hostname and port for the LMTP server (default: `127.0.0.1` and `8024` respectively)
+- `limiter_storage_uri`: backend URI for rate-limit storage, used by `flask-limiter`, can be `memory://` or `redis://` (default: `memory://`)
 
 ### Storage
 
