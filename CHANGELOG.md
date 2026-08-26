@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - clarify the two-step flow for `/list/verify` (`SPEC.md`)
+- push semver-tagged images in ghcr-push workflow (`ghcr-push.yml`)
 
 ### Fixed
 
