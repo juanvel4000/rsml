@@ -5,6 +5,7 @@
 ![pypi version](https://img.shields.io/pypi/v/rsml)
 ![github actions workflow status (publish)](https://img.shields.io/github/actions/workflow/status/juanvel4000/rsml/publish.yml?label=publish)
 ![github actions workflow status (tests)](https://img.shields.io/github/actions/workflow/status/juanvel4000/rsml/tests.yml?label=tests)
+![github actions workflow status (ghcr push)](https://img.shields.io/github/actions/workflow/status/juanvel4000/rsml/ghcr-push.yml?label=ghcr-push)
 
 a small, self-hosted mailing list system.
 
