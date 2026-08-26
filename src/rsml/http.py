@@ -32,6 +32,22 @@ def create_app(config: RSMLConfig) -> Flask:
     return app
 
 
+def _validate_email(email: str) -> str | None:
+    """internal function to validate an email"""
+    try:
+        return validate_email(email, check_deliverability=False).normalized
+    except EmailNotValidError:
+        return None
+
+
+def _validate_token(
+    config: RSMLConfig, purpose: str, email: str, token: str | None
+) -> bool:
+    return hmac.compare_digest(
+        generate_token(config.server_secret, purpose, email), token or ""
+    )
+
+
 @http.route("/list/subscribe", methods=["POST"])
 @limiter.limit("5 per hour")
 async def subscribe():
@@ -42,10 +58,8 @@ async def subscribe():
     if not isinstance(data, dict):
         return {"success": False, "error": "json object required"}, 400
 
-    email = data.get("email", "")
-    try:
-        email = validate_email(email, check_deliverability=False).normalized
-    except EmailNotValidError:
+    email = _validate_email(data.get("email", ""))
+    if not email:
         return {"success": False, "error": "invalid email address"}, 400
 
     await mailer.send(mailer.generate_verification(email), email)
@@ -58,18 +72,11 @@ def verify_confirm():
     config = current_app.config["RSML_CONFIG"]
     token = request.args.get("token")
 
-    email = request.args.get("email")
+    email = _validate_email(request.args.get("email", ""))
     if not email:
-        return {"success": False, "error": "email is required"}, 400
-
-    try:
-        email = validate_email(email, check_deliverability=False).normalized
-    except EmailNotValidError:
         return {"success": False, "error": "invalid email address"}, 400
 
-    if not hmac.compare_digest(
-        generate_token(config.server_secret, "verify", email), token or ""
-    ):
+    if not _validate_token(config, "verify", email, token):
         return {"success": False, "error": "token does not match with the email"}, 403
 
     return f"""
@@ -98,18 +105,12 @@ def verify_confirm():
 def verify():
     config = current_app.config["RSML_CONFIG"]
     storage = current_app.config["RSML_STORAGE"]
-    email = request.form.get("email")
     token = request.form.get("token")
-    if not email:
-        return {"success": False, "error": "email is required"}, 400
 
-    try:
-        email = validate_email(email, check_deliverability=False).normalized
-    except EmailNotValidError:
+    email = _validate_email(request.form.get("email", ""))
+    if not email:
         return {"success": False, "error": "invalid email address"}, 400
-    if not hmac.compare_digest(
-        generate_token(config.server_secret, "verify", email), token or ""
-    ):
+    if not _validate_token(config, "verify", email, token):
         return {"success": False, "error": "token does not match with the email"}, 403
     storage.add_subscriber(email)
     return {"success": True}, 201
@@ -122,18 +123,11 @@ def unsubscribe():
     storage = current_app.config["RSML_STORAGE"]
     token = request.args.get("token")
 
-    email = request.args.get("email")
+    email = _validate_email(request.args.get("email", ""))
     if not email:
-        return {"success": False, "error": "email is required"}, 400
-
-    try:
-        email = validate_email(email, check_deliverability=False).normalized
-    except EmailNotValidError:
         return {"success": False, "error": "invalid email address"}, 400
 
-    if not hmac.compare_digest(
-        generate_token(config.server_secret, "unsub", email), token or ""
-    ):
+    if not _validate_token(config, "unsub", email, token):
         return {"success": False, "error": "token does not match with the email"}, 403
 
     _ = storage.remove_subscriber(email)

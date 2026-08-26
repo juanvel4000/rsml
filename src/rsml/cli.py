@@ -93,7 +93,7 @@ def get_config() -> RSMLConfig:
                 logger.debug(f"failed to load config from {fil}: {exc}")
                 continue
 
-    print("could not find a valid rsml.toml")
+    logger.error("could not find a valid rsml.toml")
     sys.exit(1)
 
 

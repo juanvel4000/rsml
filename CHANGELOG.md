@@ -15,6 +15,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - clarify the two-step flow for `/list/verify` (`SPEC.md`)
 
+### Fixed
+
+- abstract token and email validation to separate functions (`http.py`)
+
 ## [0.3.0] - 2026-08-25
 
 ### Added
