@@ -18,9 +18,13 @@ Users can subscribe to the mailing list through HTTP (with an `email` field in a
 
 `GET /list/verify?email=X&token=Y`
 
+`POST /list/verify`
+
 After subscription, the server will send the user an email verifying their subscription to the mailing list.
 
 The `token` key must contain a `hex(HMAC-SHA256(server_secret, "verify:" + email))`-generated token.
+
+The initial `GET /list/verify?email=X&token=Y` request returns an HTML page containing a form that submits to `POST /list/verify`. This two-step flow protects against prefetching (e.g. by email clients or browsers) that could otherwise verify the subscription unintentionally.
 
 #### Unsubscription
 
