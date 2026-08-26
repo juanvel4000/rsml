@@ -1,5 +1,6 @@
 """functions for the cli frontend"""
 
+import logging
 import os
 import signal
 import sys
@@ -8,6 +9,20 @@ from pathlib import Path
 from .config import RSMLConfig, load_config
 from .http import create_app
 from .lmtp import controller_init, controller_stop
+
+LEVELS = {
+    "debug": logging.DEBUG,
+    "info": logging.INFO,
+    "warning": logging.WARNING,
+    "error": logging.ERROR,
+    "critical": logging.CRITICAL,
+}
+
+logging.basicConfig(
+    level=LEVELS.get(os.getenv("RSML_LOG_LEVEL", "info").lower(), logging.INFO)
+)
+
+logger = logging.getLogger(__name__)
 
 
 def run_http(config: RSMLConfig):
@@ -30,6 +45,8 @@ def run_lmtp(config: RSMLConfig):
         signal.pause()
     except KeyboardInterrupt:
         pass
+    except Exception as exc:
+        logger.warning(f"lmtp: {exc}")
     finally:
         controller_stop(controller, storage)
 
@@ -56,8 +73,8 @@ def get_config() -> RSMLConfig:
     if env_path:
         try:
             return load_config(Path(env_path))
-        except Exception:
-            pass
+        except Exception as exc:
+            logger.warning(f"failed to load config from {env_path}: {exc}")
 
     options = [
         Path("./rsml.toml"),
@@ -72,7 +89,8 @@ def get_config() -> RSMLConfig:
         if fil.is_file():
             try:
                 return load_config(fil)
-            except Exception:
+            except Exception as exc:
+                logger.debug(f"failed to load config from {fil}: {exc}")
                 continue
 
     print("could not find a valid rsml.toml")

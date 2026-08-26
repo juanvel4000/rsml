@@ -1,6 +1,7 @@
 """system mail generator"""
 
 import copy
+import logging
 from collections.abc import Iterable
 from email import policy
 from email.message import EmailMessage
@@ -13,6 +14,8 @@ from email_validator import EmailNotValidError, validate_email
 
 from .config import RSMLConfig
 from .tokens import generate_token
+
+logger = logging.getLogger(__name__)
 
 
 class Mailer:
@@ -79,7 +82,8 @@ class Mailer:
                 msg = copy.deepcopy(og)
                 msg = self.add_unsubscribe_headers(sub, msg)
                 _ = await self.send(msg, sub)
-            except Exception:
+            except Exception as exc:
+                logger.warning(f"failed to forward to {sub}: {exc}")
                 failed.append(sub)
         return failed
 
