@@ -1,10 +1,10 @@
-# rsml
+# really simple mailing lists
 
-![PyPI License](https://img.shields.io/pypi/l/rsml)
-![PyPI Status](https://img.shields.io/pypi/status/rsml)
-![PyPI Version](https://img.shields.io/pypi/v/rsml)
-![GitHub Actions Workflow Status (Publish)](https://img.shields.io/github/actions/workflow/status/juanvel4000/rsml/publish.yml?label=publish)
-![GitHub Actions Workflow Status (Tests)](https://img.shields.io/github/actions/workflow/status/juanvel4000/rsml/tests.yml?label=tests)
+![pypi license](https://img.shields.io/pypi/l/rsml)
+![pypi status](https://img.shields.io/pypi/status/rsml)
+![pypi version](https://img.shields.io/pypi/v/rsml)
+![github actions workflow status (publish)](https://img.shields.io/github/actions/workflow/status/juanvel4000/rsml/publish.yml?label=publish)
+![github actions workflow status (tests)](https://img.shields.io/github/actions/workflow/status/juanvel4000/rsml/tests.yml?label=tests)
 
 a small, self-hosted mailing list system.
 
@@ -19,12 +19,78 @@ a small, self-hosted mailing list system.
 - `/list/archive` endpoint for `.mbox` archive retrieval of the mailing list
 - one-click unsubscribe with `List-Unsubscribe` and `List-Unsubscribe-Post` (RFC 8058)
 
+## quick start
+
+rsml can be run directly with python or as a container using an OCI-compatible runtime.
+
+1. create a configuration
+
+```sh
+cp rsml.toml.example rsml.toml # copy the example configuration
+${EDITOR:-nano} rsml.toml # modify the configuration file
+```
+
+> at minimum, configure the server secret. see `rsml.toml.example` for the available options.
+
+2. run rsml
+
+2.1 with python
+
+```sh
+pip install rsml # install rsml and dependencies
+```
+
+start the http server:
+
+```sh
+rsml http
+```
+
+in a separate process, start the lmtp server:
+
+```sh
+rsml lmtp
+```
+
+2.2 with a container
+
+alternatively, rsml can be run from its OCI container image using podman, docker, or another OCI-compatible runtime.
+
+example (with podman)
+
+```sh
+podman run --rm -it \
+  -p 8080:8080 \
+  -v "$PWD/rsml.toml:/home/rsml/rsml.toml:ro" \
+  ghcr.io/juanvel4000/rsml:latest \
+  http
+```
+
+and for the lmtp server
+
+```sh
+podman run --rm -it \
+  -p 8024:8024 \
+  -v "$PWD/rsml.toml:/home/rsml/rsml.toml:ro" \
+  ghcr.io/juanvel4000/rsml:latest \
+  lmtp
+```
+
+3. configure your mta
+
+rsml receives mailing-list messages through LMTP. configure your mta to deliver messages destined for the mailing list to the rsml lmtp server.
+
+set `relay_host` and `relay_port` in `rsml.toml` to the hostname and port of the mta used by rsml for outgoing mail.
+
 ## dependencies
 
 rsml requires at least
 
 - a python `>=3.11`-compatible interpreter
-- an MTA capable of receiving and sending mail through SMTP and LMTP
+
+a complete deployement requires
+
+- an mta capable of receiving mail and delivering messages to rsml over LMTP
 
 runtime dependencies include
 
@@ -39,23 +105,23 @@ development-time dependencies include:
 ## usage
 
 ```sh
-  $ pip install -e . # install rsml and dependencies
-  $ cp rsml.toml.example rsml.toml # edit server_secret, etc.
-  $ rsml http # start the http server
-  $ rsml lmtp # start the lmtp server
+pip install -e . # install rsml and dependencies
+cp rsml.toml.example rsml.toml # edit server_secret, etc.
+rsml http # start the http server
+rsml lmtp # start the lmtp server
 ```
 
 running the test suite can be done with `pytest`
 
 ```sh
-  $ pip install -e ".[dev]" # install dev dependencies
-  $ pytest -vs . # run the unit tests
+pip install -e ".[dev]" # install dev dependencies
+pytest -vs . # run the unit tests
 ```
 
 redis support for the rate limiter requires the `redis` optional dependency set to be installed
 
 ```sh
-  $ pip install -e ".[redis]"
+pip install -e ".[redis]"
 ```
 
 ## spec
@@ -71,4 +137,4 @@ rsml is in active development. while functional, it is **not yet production-read
 
 ## license
 
-BSD-3-Clause, see [LICENSE](LICENSE)
+BSD-3-Clause -- see [LICENSE](LICENSE)

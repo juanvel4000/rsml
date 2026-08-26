@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `quick start` section to `README.md`
 - github workflow to push container images to ghcr
 - `Containerfile`, `compose.yaml`, and `.containerignore` files for containers
 - add redis support in rate limiter (`http.py`)
