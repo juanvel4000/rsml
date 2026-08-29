@@ -112,6 +112,10 @@ rsml http # start the http server
 rsml lmtp # start the lmtp server
 ```
 
+> rsml is intended to run single-threaded.
+
+> `Storage`'s sqlite3 connection is not safe for concurrent usage across threads.
+
 running the test suite can be done with `pytest`
 
 ```sh
@@ -131,7 +135,7 @@ a document outlining the technical specifications of the project can be found in
 
 ## project status
 
-rsml is in active development. while functional, it is **not yet production-ready** for real-world usage.
+rsml is in active development. it is functional and moving toward stability, though some interfaces might still change before a 1.0 release.
 
 - [CHANGELOG.md](CHANGELOG.md) -- release history
 - [CONTRIBUTING.md](CONTRIBUTING.md) -- how to report bugs and send patches
