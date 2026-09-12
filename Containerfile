@@ -1,5 +1,5 @@
 # build
-FROM python:3.13-slim AS build
+FROM python:3.14-slim AS build
 WORKDIR /build
 
 RUN pip install --no-cache-dir build pytest
@@ -10,7 +10,7 @@ RUN pytest -v
 RUN python -m build --wheel
 
 # runtime
-FROM python:3.13-slim AS runtime
+FROM python:3.14-slim AS runtime
 WORKDIR /runtime
 
 RUN useradd --create-home --shell /usr/sbin/nologin rsml
